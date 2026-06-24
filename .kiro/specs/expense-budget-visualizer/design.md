@@ -95,7 +95,7 @@ No build tools, no npm, no test framework. The app opens directly as a local HTM
 
 ---
 
-## Components
+## Components and Interfaces
 
 ### HTML Sections (`index.html`)
 
@@ -151,7 +151,7 @@ No build tools, no npm, no test framework. The app opens directly as a local HTM
 
 ---
 
-## Data Model
+## Data Models
 
 All transactions are stored as a JSON array under a single `localStorage` key.
 
@@ -249,17 +249,17 @@ For any form submission where at least one field is invalid (empty name, non-pos
 ### Property 3: Form Clears After Save
 For any valid transaction that is successfully saved, all input fields of the form SHALL be reset to empty/default values.
 
-**Validates: Requirement 1.5**
+**Validates: Requirements 1.5**
 
 ### Property 4: Delete Removes Record
 For any transaction that exists in `transactions`, calling `deleteTransaction(id)` SHALL result in the array NOT containing a record with that id.
 
-**Validates: Requirement 2.2**
+**Validates: Requirements 2.2**
 
 ### Property 5: Empty State on Last Delete
 When the last transaction is deleted, `transactions.length` SHALL equal 0 and `#empty-state` SHALL be visible.
 
-**Validates: Requirement 2.3**
+**Validates: Requirements 2.3**
 
 ### Property 6: Balance Equals Sum
 For any set of transactions, `renderBalance()` SHALL display a value equal to the arithmetic sum of all `transaction.amount` values, formatted to two decimal places. When the array is empty, the displayed value SHALL be `"0.00"`.
@@ -274,19 +274,49 @@ For any set of transactions, the data passed to Chart.js SHALL contain exactly o
 ### Property 8: Sort Does Not Mutate Storage
 For any sort order selection, the `transactions` in-memory array and `localStorage` value SHALL remain in insertion order after `renderList()` is called with a sort option active.
 
-**Validates: Requirement 7.2**
+**Validates: Requirements 7.2**
 
 ### Property 9: Over-Limit Class Applied Correctly
 When the total balance exceeds the spending limit (a positive number), `#total-balance` SHALL have the `.over-limit` class. When it does not exceed the limit, the class SHALL NOT be present.
 
-**Validates: Requirement 8.2**
+**Validates: Requirements 8.2**
 
 ### Property 10: Theme Persistence
 After toggling to dark mode and reloading the page, `localStorage.getItem('ebv_theme')` SHALL equal `"dark"` and `<body>` SHALL have the `dark-mode` class applied on load.
 
-**Validates: Requirement 9.2**
+**Validates: Requirements 9.2**
 
 ### Property 11: localStorage Round-Trip
 For any valid `Transaction` object, serialising it via `JSON.stringify` and deserialising via `JSON.parse` SHALL produce an object with all field values equal to the original.
 
-**Validates: Requirement 6.1**
+**Validates: Requirements 6.1**
+
+---
+
+## Testing Strategy
+
+### Overview
+
+The core logic consists of pure or near-pure functions with clear input/output contracts — data validation, localStorage read/write, balance aggregation, sort, and chart data computation. These are well-suited for both example-based and property-based testing.
+
+### Example-Based Tests
+
+| Scenario | Expectation |
+|---|---|
+| Submit form with empty name | `#form-error` shows error, `transactions` unchanged |
+| Submit form with negative amount | `#form-error` shows error, `transactions` unchanged |
+| Add valid transaction | Appears in list, balance updates, chart updates |
+| Delete only transaction | List shows empty-state, balance shows `0.00`, chart shows placeholder |
+| Reload page with saved data | All transactions restored from `localStorage` |
+| Toggle dark mode | `dark-mode` class on `<body>`, preference saved to `localStorage` |
+| Set spending limit below total | `#total-balance` gets `.over-limit` class |
+
+### Responsive Layout Testing
+
+Verified manually at four breakpoints: 320px, 768px, 1440px, 2560px — single column below 768px, two-column grid at or above 768px, no horizontal scroll at 320px.
+
+### Accessibility
+
+- All form fields include `<label>` elements linked via `for`/`id`
+- `#form-error` uses `role="alert"` for screen reader announcements
+- Interactive elements meet minimum touch target size (44px height)
