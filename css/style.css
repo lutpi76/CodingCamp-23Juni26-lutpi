@@ -293,9 +293,16 @@ button[type="submit"]:active {
   padding-top: 0.5rem;
 }
 
-#spending-chart {
-  max-width: 280px;
+.chart-canvas-wrap {
   width: 100%;
+  max-width: 280px;
+  aspect-ratio: 1 / 1;
+  position: relative;
+}
+
+#spending-chart {
+  width: 100% !important;
+  height: 100% !important;
 }
 
 #chart-placeholder {
@@ -496,7 +503,7 @@ button[type="submit"]:active {
     min-width: 180px;
   }
 
-  #spending-chart {
+  .chart-canvas-wrap {
     max-width: 340px;
   }
 }

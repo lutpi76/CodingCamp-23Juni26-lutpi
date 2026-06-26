@@ -346,6 +346,7 @@ function renderChart() {
       ],
     },
     options: {
+      maintainAspectRatio: false,
       plugins: {
         legend: {
           labels: {
