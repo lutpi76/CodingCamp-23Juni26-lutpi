@@ -206,6 +206,9 @@ function renderList() {
 
     const categorySpan = document.createElement('span');
     categorySpan.classList.add('transaction-category');
+    // Add per-category pill colour class
+    const catClass = 'cat-' + transaction.category.toLowerCase();
+    categorySpan.classList.add(catClass);
     categorySpan.textContent = transaction.category;
 
     const deleteBtn = document.createElement('button');
@@ -244,8 +247,10 @@ function renderBalance() {
     const limitValue = limitInput ? parseFloat(limitInput.value) : NaN;
     if (!isNaN(limitValue) && limitValue > 0 && total > limitValue) {
       balanceEl.classList.add('over-limit');
+      balanceEl.title = '⚠️ Spending limit exceeded!';
     } else {
       balanceEl.classList.remove('over-limit');
+      balanceEl.title = '';
     }
   }
 }
@@ -419,6 +424,8 @@ function initTheme() {
   const savedTheme = localStorage.getItem('ebv_theme');
   if (savedTheme === 'dark') {
     document.body.classList.add('dark-mode');
+    const toggleBtn = document.getElementById('theme-toggle');
+    if (toggleBtn) toggleBtn.textContent = '☀️ Light Mode';
   }
 }
 
@@ -434,8 +441,10 @@ function initThemeToggle() {
   if (!toggleBtn) return;
   toggleBtn.addEventListener('click', function () {
     document.body.classList.toggle('dark-mode');
-    const theme = document.body.classList.contains('dark-mode') ? 'dark' : 'light';
+    const isDark = document.body.classList.contains('dark-mode');
+    const theme = isDark ? 'dark' : 'light';
     localStorage.setItem('ebv_theme', theme);
+    toggleBtn.textContent = isDark ? '☀️ Light Mode' : '🌙 Dark Mode';
     renderChart(); // rebuild chart so legend colour matches the new theme
   });
 }
